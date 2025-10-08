@@ -2,6 +2,7 @@ streamlit
 torch
 torchvision
 opencv-python-headless
+psutil
 numpy
 pillow
 gdown
