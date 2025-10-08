@@ -13,7 +13,7 @@ from tinyvit_fcos import TinyViT_FCOS, postprocess_predictions
 # =========================================================
 MODEL_PATH = "fcos_tinyvit_checkpoint.pth"
 DRIVE_FILE_ID = "16922btuT2tHbo-oEPR3Rl2xrq4xZMnyD"  # your model file ID
-DOWNLOAD_URL = f"https://drive.google.com/uc?id={DRIVE_FILE_ID}&confirm=1"
+DOWNLOAD_URL = f"https://drive.google.com/uc?id={DRIVE_FILE_ID}"
 
 # =========================================================
 # MODEL LOADING (cached)
@@ -27,7 +27,9 @@ def load_model():
 
     # Initialize model
     model = TinyViT_FCOS(num_classes=1)
-    checkpoint = torch.load(MODEL_PATH, map_location="cpu")
+    
+    # --- THIS IS THE CORRECTED LINE ---
+    checkpoint = torch.load(MODEL_PATH, map_location="cpu", weights_only=False)
 
     # Load weights
     model.load_state_dict(checkpoint.get("model", checkpoint), strict=False)
