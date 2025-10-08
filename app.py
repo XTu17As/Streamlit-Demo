@@ -14,7 +14,6 @@ from tinyvit_fcos import TinyViT_FCOS, postprocess_predictions
 MODEL_PATH = "fcos_tinyvit_checkpoint.pth"
 DRIVE_FILE_ID = "16922btuT2tHbo-oEPR3Rl2xrq4xZMnyD"  # your model file ID
 DOWNLOAD_URL = f"https://drive.google.com/uc?id={DRIVE_FILE_ID}&confirm=1"
-"
 
 # =========================================================
 # MODEL LOADING (cached)
