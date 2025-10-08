@@ -19,25 +19,40 @@ DOWNLOAD_URL = f"https://drive.google.com/uc?id={DRIVE_FILE_ID}&confirm=1"
 # MODEL LOADING (cached)
 # =========================================================
 @st.cache_resource
+@st.cache_resource
 def load_model():
-    # Download model if missing
     if not os.path.exists(MODEL_PATH):
         with st.spinner("Downloading model from Google Drive..."):
-            gdown.download(DOWNLOAD_URL, MODEL_PATH, quiet=False)
+            url = f"https://drive.google.com/uc?export=download&id={DRIVE_FILE_ID}&confirm=1"
+            gdown.download(url, MODEL_PATH, quiet=False, fuzzy=True)
 
-    # Initialize model
-    model = TinyViT_FCOS(num_classes=1)
+    if os.path.getsize(MODEL_PATH) < 5_000_000:
+        st.error("⚠️ Model file seems invalid (too small or HTML).")
+        raise RuntimeError("Model download failed.")
 
+    # --- Safe loading for full checkpoint ---
     try:
         checkpoint = torch.load(MODEL_PATH, map_location="cpu", weights_only=False)
     except TypeError:
-        # For older PyTorch versions that don't support weights_only
         checkpoint = torch.load(MODEL_PATH, map_location="cpu")
 
-    # Load weights
-    model.load_state_dict(checkpoint.get("model", checkpoint), strict=False)
+    model = TinyViT_FCOS(num_classes=1)
+
+    # --- Extract state dict properly ---
+    state_dict = checkpoint.get("model", checkpoint)
+
+    # --- Ignore mismatch layers (like head.cls_logits) ---
+    model_state = model.state_dict()
+    filtered_state = {k: v for k, v in state_dict.items() if k in model_state and v.shape == model_state[k].shape}
+
+    missing_keys = [k for k in model_state.keys() if k not in filtered_state]
+    if missing_keys:
+        st.warning(f"Ignoring {len(missing_keys)} mismatched layers (e.g., classification head).")
+
+    model.load_state_dict(filtered_state, strict=False)
     model.eval()
     return model
+
 
 # =========================================================
 # APP UI
