@@ -26,7 +26,7 @@ def load_model():
             gdown.download(DOWNLOAD_URL, MODEL_PATH, quiet=False)
 
     # Initialize model
-    model = TinyViT_FCOS(num_classes=1)
+    model = TinyViT_FCOS(num_classes=12)
     
     # --- THIS IS THE CORRECTED LINE ---
     checkpoint = torch.load(MODEL_PATH, map_location="cpu", weights_only=False)
