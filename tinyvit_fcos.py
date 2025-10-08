@@ -163,7 +163,8 @@ def postprocess_predictions(cls_logits, reg_preds, ctrness, image_size, device, 
         for c in range(scores.shape[1]):
             sc=scores[:,c]; mask=sc>score_thr
             if not mask.any(): continue
-            bx,sc=sc[mask],boxes[mask]
+            # >>> This is the corrected line <<<
+            bx, sc = boxes[mask], sc[mask]
             keep=nms(bx,sc,NMS_IOU)
             for k in keep[:max_det]:
                 results.append((bx[k].cpu().numpy(),float(sc[k]),c+1))
