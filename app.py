@@ -27,7 +27,12 @@ def load_model():
 
     # Initialize model
     model = TinyViT_FCOS(num_classes=1)
-    checkpoint = torch.load(MODEL_PATH, map_location="cpu")
+
+    try:
+        checkpoint = torch.load(MODEL_PATH, map_location="cpu", weights_only=False)
+    except TypeError:
+        # For older PyTorch versions that don't support weights_only
+        checkpoint = torch.load(MODEL_PATH, map_location="cpu")
 
     # Load weights
     model.load_state_dict(checkpoint.get("model", checkpoint), strict=False)
