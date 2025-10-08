@@ -66,7 +66,7 @@ progress_text = st.empty()
 if uploaded:
     img = Image.open(uploaded).convert("RGB")
     img_np = np.array(img)
-    img_resized = cv2.resize(img_np, (512, 512))
+    img_resized = cv2.resize(img_np, (256, 256))
     st.image(img_resized, caption="Uploaded Image", channels="RGB")
 
     tensor = torch.from_numpy(img_resized.transpose(2, 0, 1)).float().unsqueeze(0) / 255.0
